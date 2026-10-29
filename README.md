@@ -1,90 +1,126 @@
-# JobSwipe - Bias-Free AI Placement Automation
+# JobSwipe: Bias-Mitigated AI Placement Automation Platform
 
-A production-grade, mathematically-fair AI placement automation system. This project models an end-to-end Machine Learning pipeline that scores candidate-company fit while strictly mitigating demographic, department, and social bias.
-
-## 🎯 Key Features & The 7-Phase Workflow
-
-This system is built around a rigorous 7-phase architecture to ensure zero "black box" decisions:
-
-1. **Synthetic Data Generation**: Generates 800 correlated students and 50 companies with hidden protected attributes.
-2. **Preprocessing & Feature Engineering**: Reduces categorical and textual data into a purely numeric, unbiased feature matrix.
-3. **Rule-Based Labeling**: Establishes ground-truth eligibility using logical constraints (e.g., Backlogs < X, skill matches).
-4. **Fairness-Aware Model Training**: Utilizes advanced ML (LightGBM, Ensembles) wrapped in Fairlearn constraints to optimize for Equalized Odds and Demographic Parity.
-5. **Fairness Auditing**: Automatically rejects models with > 10% disparity across genders or departments.
-6. **Explainable AI (XAI)**: Generates prioritized improvement feedback for rejected candidates.
-7. **Systems Integration (Admin UI)**: A premium, dynamic React frontend connecting via FastAPI to serve real-time predictions.
+A mathematically fair, audited machine learning placement automation system designed to score candidate-job profile fit while enforcing algorithmic fairness across gender, departmental, and demographic attributes.
 
 ---
 
-## 🚀 Quick Start (Running Locally)
+## Overview
 
-**Prerequisites:** Node.js 18+ and Python 3.9+
+Traditional algorithmic recruitment often inherits historical selection biases. JobSwipe addresses this challenge by embedding algorithmic fairness constraints directly into the candidate ranking and classification pipeline.
 
-### Option A: Automated Startup (Windows)
+Using a synthetic population of 800 candidates and 50 corporate hiring profiles, the system optimizes candidate-opportunity matching under strict fairness constraints (Demographic Parity and Equalized Odds), ensuring no demographic group experiences disparate impact above standard regulatory thresholds.
 
-Use the provided batch scripts to launch both servers simultaneously:
+---
 
-1. Open a terminal and run the backend:
+## 7-Phase System Architecture
+
+```
+1. Synthetic Generation ──► 800 correlated candidate profiles & 50 corporate specs
+          │
+          ▼
+2. Preprocessing        ──► Numeric feature extraction & protected attribute isolation
+          │
+          ▼
+3. Rule-Based Labeling  ──► Deterministic ground-truth generation (CGPA, backlogs, skills)
+          │
+          ▼
+4. Fair Model Training  ──► LightGBM ensemble with Fairlearn disparity constraints
+          │
+          ▼
+5. Disparity Auditing   ──► Automated rejection for models exceeding 10% demographic gap
+          │
+          ▼
+6. Explainable AI (XAI) ──► Transparent, actionable feedback generation for candidates
+          │
+          ▼
+7. Admin Dashboard      ──► Real-time evaluation console (FastAPI + React 18)
+```
+
+---
+
+## Core Capabilities
+
+- **Fairness-Constrained ML**: Wraps gradient boosted trees (LightGBM) within Fairlearn optimization to maintain high predictive utility while bounding disparate impact.
+- **Explainable Feedback (XAI)**: Generates human-interpretable rejection rationales and candidate improvement roadmaps rather than opaque numerical scores.
+- **Interactive Evaluation Arena**: Supports both single-candidate diagnostic evaluation and batch ranking across the full applicant cohort.
+- **Auditing Dashboard**: Visualizes model performance curves, Demographic Parity ratios, and Equalized Odds differences across gender and department partitions.
+
+---
+
+## Technology Stack
+
+- **Machine Learning & Backend**: Python 3.9+, FastAPI, LightGBM, Fairlearn, Scikit-learn, Pandas, NumPy, Faker.
+- **Frontend & Visualization**: React 18, Vite, Zustand, Tailwind CSS, Lucide Icons.
+- **Data & Configuration**: Supabase / PostgreSQL (optional persistent layer, see `SUPABASE_SETUP.md`).
+
+---
+
+## Repository Structure
+
+```
+.
+├── backend/
+│   ├── app/                   # FastAPI routes, schemas, and models
+│   ├── models/                # Trained LightGBM and fairness checkpoints
+│   ├── requirements.txt       # Python dependencies
+│   └── main.py                # Server entry point
+├── frontend/
+│   ├── src/                   # React components, pages, and store
+│   ├── package.json
+│   └── vite.config.js
+├── approach_summary.md        # Detailed mathematical formulations
+├── project_workflow.md        # Architectural flow and design choices
+├── SUPABASE_SETUP.md          # Database migration and cloud schema
+├── run_backend.bat / .sh      # Automated backend startup script
+├── run_frontend.bat / .sh     # Automated frontend startup script
+└── README.md
+```
+
+---
+
+## Setup and Quickstart
+
+### Automated Startup (Windows)
+1. Launch the backend:
    ```cmd
-   double-click run_backend.bat
+   run_backend.bat
    ```
-2. Open a second terminal and run the frontend:
+2. Launch the frontend:
    ```cmd
-   double-click run_frontend.bat
+   run_frontend.bat
    ```
 
-### Option B: Manual Setup
+### Manual Installation
 
-#### 1. Backend Setup
+#### Backend
 ```bash
 cd backend
 python -m venv venv
-# Activate the virtual environment
-# Windows: venv\Scripts\activate
-# Mac/Linux: source venv/bin/activate
+
+# Activate environment
+# Windows:
+.\venv\Scripts\activate
+# Linux/macOS:
+source venv/bin/activate
 
 pip install -r requirements.txt
 uvicorn app.main:app --reload --host 0.0.0.0 --port 8000
 ```
-> The API will be live at `http://localhost:8000`.
+Backend API interactive Swagger docs available at `http://localhost:8000/docs`.
 
-#### 2. Frontend Setup
+#### Frontend
 ```bash
 cd frontend
 npm install
 npm run dev
 ```
-> The Admin Dashboard will be live at `http://localhost:3000`.
+Frontend application available at `http://localhost:3000` or `http://localhost:5173`.
 
 ---
 
-## 💻 The Admin Workspace
+## Evaluation Workflow
 
-The standard student flows have been consolidated into a powerful **Admin Dashboard MVP** for evaluation purposes.
-
-### Core Views:
-- **Overview Dashboard (`/dashboard`)**: Monitor AI model accuracy, fairness metrics (Gender & Department Parity), and total applicant distribution.
-- **Students Database (`/students`)**: High-level view of all synthesized candidates and their extracted CGPA/skills.
-- **Companies Database (`/companies`)**: Active hiring flows, role requirements, and basic hard filters.
-- **Eligibility Engine (`/eligibility`)**: The core AI assessment arena.
-  - **Single Mode**: Pick a candidate and a company. Execute the pipeline to see explainable scorecard breakdowns.
-  - **Batch Mode**: Run the whole 800-candidate pool against a company profile to get a ranked, fairness-adjusted shortlist.
-
----
-
-## 🛠️ Technology Stack
-
-- **Backend / Pipeline Engine**: FastAPI (Python), Pandas, Scikit-Learn, LightGBM, Fairlearn.
-- **Frontend / Telemetry UI**: React 18, Vite, Zustand, TailwindCSS (Vanilla Custom CSS + Glassmorphism UX).
-- **Data Mocks**: Faker (Python) to establish mathematically consistent datasets.
-
----
-
-## 📝 Notes for Evaluators
-
-1. Please evaluate the codebase by navigating through the `/eligibility` engine on the frontend to visualize the real-time interaction between the prediction pipeline and the UI.
-2. The UI is built using a custom, animation-rich "Premium Dark" theme without heavy reliance on external UI frameworks to maintain extreme performance and granular style control.
-3. Check `project_workflow.md` for a deeper breakdown of the mathematical assumptions behind each phase.
-
-**System Status**: Live & Operational (Phase 4-7 active).
-
+1. Navigate to the `/eligibility` section in the web interface.
+2. Select a target student profile and prospective hiring company.
+3. Review the real-time fairness audit, eligibility classification, and generated explainability factors.
+4. Execute batch mode to examine cohort-level ranking and disparity metrics.
